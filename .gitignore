@@ -1,2 +1,5 @@
 # Réglages locaux des outils
 .claude/
+.DS_Store
+KFOKAM48-Batch2-Seance2-Exercice.pdf
+hs_err_pid*.log
