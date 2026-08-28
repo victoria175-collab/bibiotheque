@@ -21,6 +21,10 @@
           </li>
 
           <li class="nav-item">
+            <a routerLink="/reservations" routerLinkActive="active" class="nav-link" *ngIf="userService.roleMatch(['Admin'])">Réservations</a>
+          </li>
+
+          <li class="nav-item">
             <a routerLink="/register-user" routerLinkActive="active" class="nav-link" *ngIf="userService.roleMatch(['Admin'])">Register User</a>
           </li>
 
