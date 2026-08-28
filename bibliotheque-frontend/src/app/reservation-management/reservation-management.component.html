@@ -1,0 +1,45 @@
+<h2>Gestion des réservations</h2>
+
+<div *ngIf="loadError" class="alert alert-danger" role="alert">
+  <div>{{ loadError }}</div>
+
+  <button
+    type="button"
+    class="btn btn-danger mt-2"
+    (click)="loadData()">
+    Réessayer
+  </button>
+</div>
+
+<div
+  *ngIf="loading"
+  class="alert alert-info"
+  role="status">
+
+  <span
+    class="spinner-border spinner-border-sm"
+    aria-hidden="true">
+  </span>
+
+  Chargement des réservations...
+</div>
+
+<div *ngIf="!loading && !loadError">
+
+  <app-reservation-form
+    [books]="books"
+    [users]="users"
+    [errorMessage]="formError"
+    (submitted)="createReservation($event)">
+  </app-reservation-form>
+
+  <app-reservation-list
+    [reservations]="filteredReservations"
+    [selectedStatus]="selectedStatus"
+    [statuses]="statuses"
+    [errorMessage]="actionError"
+    (statusChange)="onStatusChange($event)"
+    (cancelRequested)="cancelReservation($event)">
+  </app-reservation-list>
+
+</div>

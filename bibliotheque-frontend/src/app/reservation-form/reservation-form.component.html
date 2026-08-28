@@ -1,0 +1,89 @@
+<h3>Créer une réservation</h3>
+
+<div
+  *ngIf="errorMessage"
+  class="alert alert-danger"
+  role="alert">
+
+  {{ errorMessage }}
+
+</div>
+
+<form (ngSubmit)="submit()">
+
+  <div class="mb-3">
+
+    <label
+      for="reservation-book"
+      class="form-label">
+
+      Livre
+
+    </label>
+
+    <select
+      id="reservation-book"
+      name="livreId"
+      class="form-select"
+      [(ngModel)]="selectedBookId"
+      required>
+
+      <option [ngValue]="null">
+        Sélectionner un livre
+      </option>
+
+      <option
+        *ngFor="let book of books"
+        [ngValue]="book.bookId">
+
+        {{ book.bookName }}
+
+      </option>
+
+    </select>
+
+  </div>
+
+  <div class="mb-3">
+
+    <label
+      for="reservation-user"
+      class="form-label">
+
+      Adhérent
+
+    </label>
+
+    <select
+      id="reservation-user"
+      name="adherentId"
+      class="form-select"
+      [(ngModel)]="selectedUserId"
+      required>
+
+      <option [ngValue]="null">
+        Sélectionner un adhérent
+      </option>
+
+      <option
+        *ngFor="let user of users"
+        [ngValue]="user.userId">
+
+        {{ user.name }}
+
+      </option>
+
+    </select>
+
+  </div>
+
+  <button
+    type="submit"
+    class="btn btn-success"
+    [disabled]="!formValid">
+
+    Créer la réservation
+
+  </button>
+
+</form>
