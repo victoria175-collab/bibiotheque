@@ -27,6 +27,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import javax.validation.Valid;
 import java.util.Collections;
@@ -46,6 +48,7 @@ public class ReservationController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADHERENT', 'User', 'BIBLIOTHECAIRE', 'Admin')")
     @Operation(summary = "Créer une réservation")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Réservation créée"),
@@ -53,43 +56,49 @@ public class ReservationController {
             @ApiResponse(responseCode = "404", description = "Livre ou adhérent introuvable"),
             @ApiResponse(responseCode = "409", description = "Règle métier violée")
     })
-    public ResponseEntity<ReservationResponse> create(@Valid @RequestBody ReservationCreateRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(reservationService.create(request));
+    public ResponseEntity<ReservationResponse> create(@Valid @RequestBody ReservationCreateRequest request,
+                                                       Authentication authentication) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(reservationService.create(request, authentication));
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADHERENT', 'User', 'BIBLIOTHECAIRE', 'Admin')")
     @Operation(summary = "Lister les réservations")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Réservations trouvées")
     })
     public List<ReservationResponse> findAll(
             @RequestParam(required = false) ReservationStatus statut,
-            @RequestParam(required = false) Integer adherentId) {
-        return reservationService.findAll(statut, adherentId);
+            @RequestParam(required = false) Integer adherentId,
+            Authentication authentication) {
+        return reservationService.findAll(statut, adherentId, authentication);
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADHERENT', 'User', 'BIBLIOTHECAIRE', 'Admin')")
     @Operation(summary = "Consulter une réservation")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Réservation trouvée"),
             @ApiResponse(responseCode = "404", description = "Réservation introuvable")
     })
-    public ReservationResponse findById(@PathVariable Integer id) {
-        return reservationService.findById(id);
+    public ReservationResponse findById(@PathVariable Integer id, Authentication authentication) {
+        return reservationService.findById(id, authentication);
     }
 
     @PatchMapping("/{id}/annuler")
+    @PreAuthorize("hasAnyRole('ADHERENT', 'User', 'BIBLIOTHECAIRE', 'Admin')")
     @Operation(summary = "Annuler une réservation")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Réservation annulée"),
             @ApiResponse(responseCode = "404", description = "Réservation introuvable"),
             @ApiResponse(responseCode = "409", description = "La réservation ne peut plus être annulée")
     })
-    public ReservationResponse cancel(@PathVariable Integer id) {
-        return reservationService.cancel(id);
+    public ReservationResponse cancel(@PathVariable Integer id, Authentication authentication) {
+        return reservationService.cancel(id, authentication);
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('BIBLIOTHECAIRE', 'Admin')")
     @Operation(summary = "Supprimer une réservation")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Réservation supprimée"),

@@ -46,9 +46,8 @@
 
 </div>
 
-<table
-  *ngIf="reservations.length > 0"
-  class="table table-success table-striped">
+<div class="table-scroll" *ngIf="reservations.length > 0">
+<table class="table table-success table-striped">
 
   <thead>
     <tr>
@@ -91,6 +90,15 @@
 
         </button>
 
+        <button
+          type="button"
+          class="btn btn-outline-danger ms-2"
+          (click)="confirmDeletion(reservation)">
+
+          Supprimer
+
+        </button>
+
         <span
           *ngIf="!canCancel(reservation.statut)">
           —
@@ -103,3 +111,4 @@
   </tbody>
 
 </table>
+</div>

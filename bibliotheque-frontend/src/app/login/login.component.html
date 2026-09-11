@@ -1,4 +1,7 @@
 <div class="container col-md-6 offset-mid-3">
+<div *ngIf="errorMessage" class="alert alert-danger" role="alert">
+  {{ errorMessage }}
+</div>
 <form autocomplete="off" #loginForm="ngForm" (ngSubmit)="login(loginForm)">
     <div class="mb-3">
       <label class="form-label" style="margin-top: 100px;">Username</label>

@@ -26,6 +26,9 @@ export class AuthInterceptor implements HttpInterceptor {
             (err:HttpErrorResponse) => {
                 console.log(err.status);
                 if(err.status === 401) {
+                    const message = this.extractErrorMessage(err) ||
+                        'Authentification requise. Veuillez vous connecter.';
+                    sessionStorage.setItem('authErrorMessage', message);
                     this.router.navigate(['/login']);
                 } else if(err.status === 403) {
                     this.router.navigate(['/forbidden']);
@@ -45,4 +48,16 @@ export class AuthInterceptor implements HttpInterceptor {
           }
       );
   }
+
+    private extractErrorMessage(error: HttpErrorResponse): string {
+        if (error.error && typeof error.error.message === 'string') {
+            return error.error.message;
+        }
+
+        if (typeof error.error === 'string') {
+            return error.error;
+        }
+
+        return '';
+    }
 }

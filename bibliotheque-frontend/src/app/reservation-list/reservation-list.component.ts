@@ -28,6 +28,9 @@ export class ReservationListComponent {
   @Output() cancelRequested =
     new EventEmitter<number>();
 
+  @Output() deleteRequested =
+    new EventEmitter<number>();
+
   canCancel(status: ReservationStatus): boolean {
     return status === 'EN_ATTENTE' ||
            status === 'DISPONIBLE';
@@ -43,6 +46,18 @@ export class ReservationListComponent {
 
     if (confirmed) {
       this.cancelRequested.emit(reservation.id);
+    }
+  }
+
+  confirmDeletion(
+    reservation: ReservationDisplay
+  ): void {
+    const confirmed = window.confirm(
+      `Confirmer la suppression de la réservation de « ${reservation.livreTitre} » ?`
+    );
+
+    if (confirmed) {
+      this.deleteRequested.emit(reservation.id);
     }
   }
 }

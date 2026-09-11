@@ -1,17 +1,15 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import {
-  Reservation,
-  ReservationCreateRequest
-} from '../_model/reservation';
+import { Reservation, ReservationCreateRequest} from '../_model/reservation';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ReservationService {
 
-  private readonly baseUrl = 'http://localhost:8080/api/reservations';
+  private readonly baseUrl = `${environment.apiUrl}/api/reservations`;
 
   constructor(private readonly httpClient: HttpClient) {}
 
@@ -33,5 +31,9 @@ export class ReservationService {
       `${this.baseUrl}/${id}/annuler`,
       {}
     );
+  }
+
+  deleteReservation(id: number): Observable<void> {
+    return this.httpClient.delete<void>(`${this.baseUrl}/${id}`);
   }
 }

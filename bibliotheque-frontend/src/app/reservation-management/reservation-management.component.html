@@ -34,12 +34,43 @@
   </app-reservation-form>
 
   <app-reservation-list
-    [reservations]="filteredReservations"
+    [reservations]="paginatedReservations"
     [selectedStatus]="selectedStatus"
     [statuses]="statuses"
     [errorMessage]="actionError"
     (statusChange)="onStatusChange($event)"
-    (cancelRequested)="cancelReservation($event)">
+    (cancelRequested)="cancelReservation($event)"
+    (deleteRequested)="deleteReservation($event)">
   </app-reservation-list>
+
+  <div
+  *ngIf="totalPages > 1"
+  class="d-flex justify-content-between align-items-center mt-3">
+
+  <button
+    type="button"
+    class="btn btn-outline-primary"
+    [disabled]="currentPage === 1"
+    (click)="previousPage()">
+
+    Précédent
+
+  </button>
+
+  <span>
+    Page {{ currentPage }} sur {{ totalPages }}
+  </span>
+
+  <button
+    type="button"
+    class="btn btn-outline-primary"
+    [disabled]="currentPage === totalPages"
+    (click)="nextPage()">
+
+    Suivant
+
+  </button>
+
+</div>
 
 </div>

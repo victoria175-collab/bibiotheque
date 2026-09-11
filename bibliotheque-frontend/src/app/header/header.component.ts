@@ -17,6 +17,7 @@ export class HeaderComponent implements OnInit {
   ) { }
 
   name = this.userAuthService.getName();
+  menuOpen = false;
   ngOnInit(): void {
   }
 

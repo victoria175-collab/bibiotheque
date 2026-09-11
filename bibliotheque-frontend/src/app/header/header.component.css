@@ -1,4 +1,38 @@
-.right-text {
-    margin-left: 1000px;
+.navbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.navbar-profile {
+    color: rgba(255, 255, 255, 0.9);
     font-size: 17px;
+    white-space: nowrap;
+}
+
+.navbar-brand {
+    white-space: normal;
+    line-height: 1.2;
+}
+
+@media (max-width: 991.98px) {
+    .navbar-collapse.show {
+        display: block;
+    }
+
+    .navbar-actions {
+        align-items: stretch;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+    }
+
+    .navbar-profile {
+        text-align: left;
+    }
+
+    .navbar .btn {
+        margin-top: 0.5rem;
+        width: 100%;
+    }
 }

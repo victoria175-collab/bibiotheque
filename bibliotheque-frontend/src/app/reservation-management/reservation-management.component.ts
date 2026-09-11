@@ -4,12 +4,7 @@ import { forkJoin } from 'rxjs';
 
 import { Books } from '../_model/books';
 import { Users } from '../_model/users';
-import {
-  Reservation,
-  ReservationCreateRequest,
-  ReservationDisplay,
-  ReservationStatus
-} from '../_model/reservation';
+import { Reservation, ReservationCreateRequest, ReservationDisplay, ReservationStatus } from '../_model/reservation';
 
 import { BooksService } from '../_service/books.service';
 import { UsersService } from '../_service/users.service';
@@ -35,6 +30,8 @@ export class ReservationManagementComponent implements OnInit {
   users: Users[] = [];
 
   selectedStatus = '';
+  currentPage = 1;
+  readonly pageSize = 10;
 
   loading = false;
   loadError = '';
@@ -51,15 +48,30 @@ export class ReservationManagementComponent implements OnInit {
     this.loadData();
   }
 
-  get filteredReservations(): ReservationDisplay[] {
-    if (!this.selectedStatus) {
-      return this.reservations;
-    }
-
-    return this.reservations.filter(
-      reservation => reservation.statut === this.selectedStatus
-    );
+ get filteredReservations(): ReservationDisplay[] {
+  if (!this.selectedStatus) {
+    return this.reservations;
   }
+
+  return this.reservations.filter(
+    reservation => reservation.statut === this.selectedStatus
+  );
+}
+
+get paginatedReservations(): ReservationDisplay[] {
+  const startIndex = (this.currentPage - 1) * this.pageSize;
+
+  return this.filteredReservations.slice(
+    startIndex,
+    startIndex + this.pageSize
+  );
+}
+
+get totalPages(): number {
+  return Math.ceil(
+    this.filteredReservations.length / this.pageSize
+  );
+}
 
   loadData(): void {
     this.loading = true;
@@ -94,6 +106,7 @@ export class ReservationManagementComponent implements OnInit {
 
   onStatusChange(status: string): void {
     this.selectedStatus = status;
+    this.currentPage = 1;
   }
 
   createReservation(request: ReservationCreateRequest): void {
@@ -123,6 +136,23 @@ export class ReservationManagementComponent implements OnInit {
               }
             : reservation
         );
+      },
+
+      error: (error: HttpErrorResponse) => {
+        this.actionError = this.getBusinessErrorMessage(error);
+      }
+    });
+  }
+
+  deleteReservation(id: number): void {
+    this.actionError = '';
+
+    this.reservationService.deleteReservation(id).subscribe({
+      next: () => {
+        this.reservations = this.reservations.filter(reservation => reservation.id !== id);
+        if (this.currentPage > this.totalPages && this.currentPage > 1) {
+          this.currentPage--;
+        }
       },
 
       error: (error: HttpErrorResponse) => {
@@ -229,4 +259,16 @@ export class ReservationManagementComponent implements OnInit {
 
     return '';
   }
+
+  previousPage(): void {
+  if (this.currentPage > 1) {
+    this.currentPage--;
+  }
+}
+
+nextPage(): void {
+  if (this.currentPage < this.totalPages) {
+    this.currentPage++;
+  }
+}
 }
