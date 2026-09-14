@@ -10,7 +10,7 @@ import { UsersService } from '../_service/users.service';
 })
 export class RegistrationComponent implements OnInit {
 
-  user: Users = new Users();
+  user: Users = { ...new Users(), role: [{ roleName: 'User' }] };
   constructor(private usersService: UsersService,
     private router: Router) { }
 

@@ -9,31 +9,48 @@ import { UsersService } from '../_service/users.service';
 })
 export class AuthGuard implements CanActivate {
 
-  constructor(private userAuthService: UserAuthService,
+  constructor(
+    private userAuthService: UserAuthService,
     private router: Router,
     private userService: UsersService
   ) {}
-  
+
   canActivate(
     route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
+    state: RouterStateSnapshot
+  ): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
 
-    if(this.userAuthService.getToken() !== null) {
-      const role = route.data["roles"] as Array<string>;
-
-      if(role) {
-        const match = this.userService.roleMatch(role);
-
-        if(match) {
-          return true;
-        } else {
-          this.router.navigate(['/forbidden']);
-          return false;
-        }
-      }
+    const token = this.userAuthService.getToken();
+    if (!token) {
+      this.router.navigate(['/login']);
+      return false;
     }
 
-    this.router.navigate(['/login']);
+    const allowedRoles = (route.data['roles'] as string[] || []).map(role => this.normalizeRole(role));
+    const userRoles = this.userAuthService.getRoles() || [];
+
+    const hasAccess = userRoles.some((role: any) => {
+      const normalizedRole = this.normalizeRole(role?.roleName ?? role);
+      return allowedRoles.includes(normalizedRole);
+    });
+
+    if (hasAccess) {
+      return true;
+    }
+
+    this.router.navigate(['/forbidden']);
     return false;
+  }
+
+  private normalizeRole(roleName?: string): string {
+    if (!roleName) {
+      return '';
+    }
+
+    return roleName
+      .toString()
+      .trim()
+      .toUpperCase()
+      .replace('ROLE_', '');
   }
 }

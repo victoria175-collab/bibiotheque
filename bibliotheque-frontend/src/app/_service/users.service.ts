@@ -29,23 +29,43 @@ export class UsersService {
   }
 
   public roleMatch(allowedRoles: any): boolean {
-    let isMatch = false;
     const userRoles: any = this.userAuthService.getRoles();
 
-    if (userRoles != null && userRoles) {
-      for (let i = 0; i < userRoles.length; i++) {
-        for (let j = 0; j < allowedRoles.length; j++) {
-          if (userRoles[i].roleName === allowedRoles[j]) {
-            isMatch = true;
-            return isMatch;
-          } else {
-            return isMatch;
-          }
-        }
+    if (!userRoles || !Array.isArray(userRoles)) {
+      return false;
+    }
+
+    const normalizedAllowed = (allowedRoles || []).map((role: string) =>
+      this.normalizeRoleName(role)
+    );
+
+    for (const userRole of userRoles) {
+      const normalizedUserRole = this.normalizeRoleName(userRole?.roleName);
+      if (normalizedAllowed.includes(normalizedUserRole)) {
+        return true;
       }
     }
 
     return false;
+  }
+
+  private normalizeRoleName(roleName?: string): string {
+    if (!roleName) {
+      return '';
+    }
+
+    const value = roleName.trim();
+    const upperValue = value.toUpperCase();
+
+    if (upperValue === 'ADMIN' || upperValue === 'ROLE_ADMIN' || upperValue === 'BIBLIOTHECAIRE' || upperValue === 'ROLE_BIBLIOTHECAIRE') {
+      return 'ADMIN';
+    }
+
+    if (upperValue === 'USER' || upperValue === 'ROLE_USER' || upperValue === 'ADHERENT' || upperValue === 'ROLE_ADHERENT') {
+      return 'USER';
+    }
+
+    return upperValue;
   }
 
   getUsersList(): Observable<Users[]> {

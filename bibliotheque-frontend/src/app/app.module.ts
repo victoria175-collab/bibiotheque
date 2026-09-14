@@ -27,6 +27,7 @@ import { ReturnBookComponent } from './return-book/return-book.component';
 import { ReservationManagementComponent } from './reservation-management/reservation-management.component';
 import { ReservationListComponent } from './reservation-list/reservation-list.component';
 import { ReservationFormComponent } from './reservation-form/reservation-form.component';
+import { MessageModalComponent } from './message-modal/message-modal.component';
 
 @NgModule({
   declarations: [
@@ -49,6 +50,7 @@ import { ReservationFormComponent } from './reservation-form/reservation-form.co
     ReservationManagementComponent,
     ReservationListComponent,
     ReservationFormComponent,
+    MessageModalComponent,
   ],
   imports: [
     BrowserModule,

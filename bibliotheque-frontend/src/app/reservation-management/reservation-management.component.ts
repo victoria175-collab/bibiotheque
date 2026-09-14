@@ -9,6 +9,7 @@ import { Reservation, ReservationCreateRequest, ReservationDisplay, ReservationS
 import { BooksService } from '../_service/books.service';
 import { UsersService } from '../_service/users.service';
 import { ReservationService } from '../_service/reservation.service';
+import { UserAuthService } from '../_service/user-auth.service';
 
 @Component({
   selector: 'app-reservation-management',
@@ -28,6 +29,8 @@ export class ReservationManagementComponent implements OnInit {
   reservations: ReservationDisplay[] = [];
   books: Books[] = [];
   users: Users[] = [];
+  currentUserId: number | null = null;
+  isAdminMode = false;
 
   selectedStatus = '';
   currentPage = 1;
@@ -41,10 +44,22 @@ export class ReservationManagementComponent implements OnInit {
   constructor(
     private readonly reservationService: ReservationService,
     private readonly booksService: BooksService,
-    private readonly usersService: UsersService
+    private readonly usersService: UsersService,
+    private readonly userAuthService: UserAuthService
   ) {}
 
   ngOnInit(): void {
+    this.currentUserId = this.userAuthService.getUserId();
+  this.isAdminMode = (this.userAuthService.getRoles() ?? []).some(
+  (role: { roleName?: string }) => {
+    const roleName = (role?.roleName || '')
+      .trim()
+      .toUpperCase()
+      .replace('ROLE_', '');
+
+    return roleName === 'ADMIN' || roleName === 'BIBLIOTHECAIRE';
+  }
+);
     this.loadData();
   }
 
@@ -78,20 +93,34 @@ get totalPages(): number {
     this.loadError = '';
     this.actionError = '';
 
-    forkJoin({
+    const requests = {
       reservations: this.reservationService.getReservations(),
-      books: this.booksService.getBooksList(),
-      users: this.usersService.getUsersList()
-    }).subscribe({
+      books: this.booksService.getBooksList()
+    };
+
+    const dataRequest = this.isAdminMode
+      ? forkJoin({ ...requests, users: this.usersService.getUsersList() })
+      : forkJoin(requests);
+
+    dataRequest.subscribe({
       next: result => {
+        const users: Users[] = (result as { users?: Users[] }).users ?? [];
+
         this.reservations = this.toDisplayReservations(
           result.reservations,
           result.books,
-          result.users
+          users
         );
 
         this.books = result.books;
-        this.users = result.users.filter(user => this.isAdherent(user));
+
+        if (!this.isAdminMode && this.currentUserId !== null) {
+          this.users = users.filter(
+            user => user.userId === this.currentUserId && this.isAdherent(user)
+          );
+        } else {
+          this.users = users.filter(user => this.isAdherent(user));
+        }
 
         this.loading = false;
       },
@@ -164,8 +193,10 @@ get totalPages(): number {
   private isAdherent(user: Users): boolean {
     return Array.isArray(user.role) &&
       user.role.some(
-        (role: { roleName?: string }) =>
-          role.roleName === 'User'
+        (role: { roleName?: string }) => {
+          const roleName = (role?.roleName || '').toUpperCase();
+          return roleName === 'USER' || roleName === 'ADHERENT';
+        }
       );
   }
 

@@ -11,7 +11,7 @@ import { UsersService } from '../_service/users.service';
 export class UpdateUserComponent implements OnInit {
 
   userId: number;
-  user: Users = new Users();
+  user: Users = { ...new Users(), role: [{ roleName: 'User' }] };
   constructor(private usersService: UsersService,
     private route: ActivatedRoute,
     private router: Router) { }
@@ -19,7 +19,11 @@ export class UpdateUserComponent implements OnInit {
   ngOnInit(): void {
     this.userId = this.route.snapshot.params['userId'];
     this.usersService.getUserById(this.userId).subscribe(data => {
-      this.user = data;
+      this.user = {
+        ...new Users(),
+        ...data,
+        role: data?.role && data.role.length ? data.role : [{ roleName: 'User' }]
+      };
     })
   }
 

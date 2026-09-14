@@ -1,0 +1,66 @@
+<div
+  *ngIf="visible"
+  class="modal-backdrop-custom">
+
+  <div
+    class="custom-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="modal-title">
+
+    <div
+      class="modal-header-custom"
+      [ngClass]="{
+        'modal-success': type === 'success',
+        'modal-error': type === 'error',
+        'modal-warning': type === 'warning',
+        'modal-confirm': type === 'confirm'
+      }">
+
+      <h5 id="modal-title">
+        {{ title }}
+      </h5>
+
+      <button
+        type="button"
+        class="btn-close"
+        aria-label="Fermer"
+        (click)="close()">
+      </button>
+
+    </div>
+
+    <div class="modal-body-custom">
+
+      <p>
+        {{ message }}
+      </p>
+
+    </div>
+
+    <div class="modal-footer-custom">
+
+      <button
+        *ngIf="showCancel"
+        type="button"
+        class="btn btn-secondary"
+        (click)="close()">
+
+        Non
+
+      </button>
+
+      <button
+        type="button"
+        class="btn btn-primary"
+        (click)="showCancel ? confirm() : close()">
+
+        {{ showCancel ? 'Oui, confirmer' : 'OK' }}
+
+      </button>
+
+    </div>
+
+  </div>
+
+</div>

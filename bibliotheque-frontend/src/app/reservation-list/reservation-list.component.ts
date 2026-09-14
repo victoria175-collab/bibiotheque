@@ -17,10 +17,11 @@ import {
 })
 export class ReservationListComponent {
 
-  @Input() reservations: ReservationDisplay[] = [];
-  @Input() selectedStatus = '';
-  @Input() statuses: ReservationStatus[] = [];
-  @Input() errorMessage = '';
+@Input() reservations: ReservationDisplay[] = [];
+@Input() selectedStatus = '';
+@Input() statuses: ReservationStatus[] = [];
+@Input() errorMessage = '';
+@Input() isAdminMode = false;
 
   @Output() statusChange =
     new EventEmitter<string>();
@@ -36,28 +37,19 @@ export class ReservationListComponent {
            status === 'DISPONIBLE';
   }
 
-  confirmCancellation(
-    reservation: ReservationDisplay
-  ): void {
+ requestCancellation(
+  reservation: ReservationDisplay
+): void {
+  this.cancelRequested.emit(reservation.id);
+}
 
-    const confirmed = window.confirm(
-      `Confirmer l’annulation de la réservation de « ${reservation.livreTitre} » ?`
-    );
-
-    if (confirmed) {
-      this.cancelRequested.emit(reservation.id);
-    }
+requestDeletion(
+  reservation: ReservationDisplay
+): void {
+  if (!this.isAdminMode) {
+    return;
   }
 
-  confirmDeletion(
-    reservation: ReservationDisplay
-  ): void {
-    const confirmed = window.confirm(
-      `Confirmer la suppression de la réservation de « ${reservation.livreTitre} » ?`
-    );
-
-    if (confirmed) {
-      this.deleteRequested.emit(reservation.id);
-    }
-  }
+  this.deleteRequested.emit(reservation.id);
+}
 }

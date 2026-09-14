@@ -20,6 +20,8 @@ export class ReservationFormComponent {
 
   @Input() books: Books[] = [];
   @Input() users: Users[] = [];
+  @Input() currentUserId: number | null = null;
+  @Input() isUserMode = false;
   @Input() errorMessage = '';
 
   @Output() submitted =
@@ -34,14 +36,15 @@ export class ReservationFormComponent {
   }
 
   submit(): void {
+    const adherentId = this.isUserMode ? this.currentUserId : this.selectedUserId;
 
-    if (!this.formValid) {
+    if (this.selectedBookId === null || adherentId === null) {
       return;
     }
 
     this.submitted.emit({
       livreId: this.selectedBookId as number,
-      adherentId: this.selectedUserId as number
+      adherentId: adherentId as number
     });
   }
 }

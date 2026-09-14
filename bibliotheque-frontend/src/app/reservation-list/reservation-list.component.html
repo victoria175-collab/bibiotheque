@@ -84,16 +84,17 @@
           *ngIf="canCancel(reservation.statut)"
           type="button"
           class="btn btn-danger"
-          (click)="confirmCancellation(reservation)">
+          (click)="requestCancellation(reservation)">
 
           Annuler
 
         </button>
 
-        <button
+       <button
+          *ngIf="isAdminMode"
           type="button"
           class="btn btn-outline-danger ms-2"
-          (click)="confirmDeletion(reservation)">
+          (click)="requestDeletion(reservation)">
 
           Supprimer
 

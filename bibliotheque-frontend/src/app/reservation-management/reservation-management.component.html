@@ -29,6 +29,8 @@
   <app-reservation-form
     [books]="books"
     [users]="users"
+    [currentUserId]="currentUserId"
+    [isUserMode]="!isAdminMode"
     [errorMessage]="formError"
     (submitted)="createReservation($event)">
   </app-reservation-form>

@@ -1,6 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { of } from 'rxjs';
 
 import { ReturnBookComponent } from './return-book.component';
+import { BorrowService } from '../_service/borrow.service';
+import { BooksService } from '../_service/books.service';
+import { UserAuthService } from '../_service/user-auth.service';
 
 describe('ReturnBookComponent', () => {
   let component: ReturnBookComponent;
@@ -8,9 +12,13 @@ describe('ReturnBookComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ReturnBookComponent ]
-    })
-    .compileComponents();
+      declarations: [ReturnBookComponent],
+      providers: [
+        { provide: BorrowService, useValue: { getBooksBorrowedByUser: () => of([]), returnBook: () => of({}) } },
+        { provide: BooksService, useValue: { getBooksList: () => of([]) } },
+        { provide: UserAuthService, useValue: { getUserId: () => 1 } }
+      ]
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ReturnBookComponent);
     component = fixture.componentInstance;
