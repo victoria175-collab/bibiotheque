@@ -31,8 +31,11 @@ export class ReservationFormComponent {
   selectedUserId: number | null = null;
 
   get formValid(): boolean {
-    return this.selectedBookId !== null &&
-           this.selectedUserId !== null;
+    const adherentId = this.isUserMode
+      ? this.currentUserId
+      : this.selectedUserId;
+
+    return this.selectedBookId !== null && adherentId !== null;
   }
 
   submit(): void {
