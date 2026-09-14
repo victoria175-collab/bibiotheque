@@ -39,6 +39,7 @@
     [reservations]="paginatedReservations"
     [selectedStatus]="selectedStatus"
     [statuses]="statuses"
+    [isAdminMode]="isAdminMode"
     [errorMessage]="actionError"
     (statusChange)="onStatusChange($event)"
     (cancelRequested)="cancelReservation($event)"

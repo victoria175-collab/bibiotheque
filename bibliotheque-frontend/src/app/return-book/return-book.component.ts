@@ -23,10 +23,11 @@ export class ReturnBookComponent implements OnInit {
   ) { }
 
   userId = this.userAuthService.getUserId();
+  isAdminMode = this.hasLibrarianRole();
 
   ngOnInit(): void {
     this.getBooks();
-    this.getBooksByUser();
+    this.getBorrowings();
   }
 
   private getBooks() {
@@ -36,8 +37,12 @@ export class ReturnBookComponent implements OnInit {
   }
 
   
-  private getBooksByUser() {
-    this.borrowService.getBooksBorrowedByUser(this.userId).subscribe(data => {
+  private getBorrowings() {
+    const borrowings = this.isAdminMode
+      ? this.borrowService.getBorrowList()
+      : this.borrowService.getBooksBorrowedByUser(this.userId);
+
+    borrowings.subscribe(data => {
       this.borrow = data;
     })
   }
@@ -46,9 +51,27 @@ export class ReturnBookComponent implements OnInit {
   public returnBook(borrowId: number) {
     this.brw.borrowId = borrowId;
     this.borrowService.returnBook(this.brw).subscribe(data => {
-      console.log(data);
+      this.getBorrowings();
     },
     error => console.log(error));
+  }
+
+  private hasLibrarianRole(): boolean {
+    const authService = this.userAuthService as UserAuthService & {
+      getRoles?: () => any[];
+    };
+    const roles = typeof authService.getRoles === 'function'
+      ? authService.getRoles() ?? []
+      : [];
+
+    return roles.some((role: any) => {
+      const roleName = (role?.roleName ?? role ?? '')
+        .toString()
+        .trim()
+        .toUpperCase()
+        .replace('ROLE_', '');
+      return roleName === 'ADMIN' || roleName === 'BIBLIOTHECAIRE';
+    });
   }
 
 }

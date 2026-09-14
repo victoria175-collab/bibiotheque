@@ -29,7 +29,7 @@ const routes: Routes = [
   {path: 'login', component: LoginComponent},
   {path: 'forbidden', component: ForbiddenComponent},
   {path: 'borrow-book', component: BorrowBookComponent, canActivate:[AuthGuard], data:{roles:['User']}},
-  {path: 'return-book', component: ReturnBookComponent, canActivate:[AuthGuard], data:{roles:['User']}},
+  {path: 'return-book', component: ReturnBookComponent, canActivate:[AuthGuard], data:{roles:['Admin', 'User', 'ADHERENT', 'BIBLIOTHECAIRE']}},
 {
   path: 'reservations',
   component: ReservationManagementComponent,
